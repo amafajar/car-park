@@ -11,6 +11,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
+import java.util.Map;
+import java.util.function.Function;
 
 @Service
 public class CarParkInformationCommandImpl implements CarParkInformationCommand {
@@ -47,5 +49,11 @@ public class CarParkInformationCommandImpl implements CarParkInformationCommand 
     public Flux<CarParkInformation> findConvertedCarParkInfo() {
         return carParkInformationDatabase.findByStatus(CarParkInformationStatus.CONVERTED.toString())
                 .cache(Duration.ofSeconds(60));
+    }
+
+    @Override
+    public Mono<Map<String, CarParkInformation>> fetchCarParkInformationMap() {
+        return findConvertedCarParkInfo()
+                .collectMap(CarParkInformation::getCarParkNumber, Function.identity());
     }
 }

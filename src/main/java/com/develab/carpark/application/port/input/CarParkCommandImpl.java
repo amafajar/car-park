@@ -28,19 +28,24 @@ public class CarParkCommandImpl implements CarParkCommand {
 
     @Override
     public Flux<CarPark> findNearestCarPark(double latitude, double longitude, Pageable pageable) {
-        Flux<CarParkInformation> carParkInformationFlux = carParkInformationCommand.findConvertedCarParkInfo();
-        Flux<CarParkAvailability> carParkAvailabilityFlux = carParkAvailabilityCommand.findCarParkAvailabilty();
-
-        return carParkInformationFlux
-//                .zipWith(carParkAvailabilityFlux,  (a, b) ->
-//                    new CarPark(a, b, calculateDisctance(a, latitude, longitude)))
-//                .filter(carPark -> carPark.getCarParkInformation().getCarParkNumber().equals(carPark.getCarParkAvailability().getCarParkNumber()))
-//                .filter(carPark -> carPark.getCarParkAvailability().getAvailableLots() != 0)
-                .flatMap(carParkInformation -> carParkAvailabilityFlux
+        return carParkInformationCommand.fetchCarParkInformationMap()
+                .flatMapMany(carParkInfoMap -> carParkAvailabilityCommand.findCarParkAvailabilty()
                         .filter(carParkAvailability -> carParkAvailability.getAvailableLots() != 0)
-                        .filter(carParkAvailability ->  carParkInformation.getCarParkNumber().equals(carParkAvailability.getCarParkNumber()))
-                        .flatMap(carParkAvailability -> Mono.just(constructCarPark(carParkInformation, carParkAvailability, latitude, longitude))
-                ))
+                        .flatMap(carParkAvailability -> {
+                            CarParkInformation carParkInformation = carParkInfoMap.get(carParkAvailability.getCarParkNumber());
+
+                            if (carParkInformation != null) {
+                                CarPark carPark = constructCarPark(
+                                        carParkInfoMap.get(carParkAvailability.getCarParkNumber()),
+                                        carParkAvailability,
+                                        latitude,
+                                        longitude);
+                                return Mono.just(carPark);
+                            } else {
+                                return Mono.empty();
+                            }
+                        })
+                )
                 .sort(carParkService.sortCarPark())
                 .skip(pageable.getOffset())
                 .take(pageable.getPageSize());
