@@ -1,0 +1,24 @@
+server:
+  port: 7203
+
+spring:
+  application:
+    name: carParkApplication
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/car_park
+    username: postgres
+    password: postgre123
+onemap:
+  baseUrl: https://www.onemap.gov.sg
+  tokenPath: /api/auth/post/getToken
+  reverseGeoPath: /api/public/revgeocodexy
+  buffer: 10
+  email: '******'
+  password: '******'
+  timeout: 30
+govtsg:
+  baseUrl: https://api.data.gov.sg
+  carParkAvailabiltyPath: /v1/transport/carpark-availability
+
+flyway:
+  baselineOnMigrate: true

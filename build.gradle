@@ -1,0 +1,50 @@
+plugins {
+	id 'java'
+	id 'application'
+	id 'org.springframework.boot' version "${springBootVersion}"
+	id 'io.spring.dependency-management' version "${springDependencyManagementVersion}"
+	id "org.flywaydb.flyway" version "${flywayVersion}"
+}
+
+group = 'com.develab'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	sourceCompatibility = '21'
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-undertow'
+	implementation 'org.postgresql:r2dbc-postgresql:1.0.2.RELEASE'
+	implementation 'com.google.code.gson:gson:2.8.6'
+	implementation 'com.opencsv:opencsv:4.5'
+	implementation 'org.apache.commons:commons-text:1.9'
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'io.projectreactor:reactor-test'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+flyway{
+	url = "jdbc:postgresql://$flywayHost:$flywayPort/$flywayDatabase"
+	user = flywayUsername
+	password = flywayPassword
+	locations = ["filesystem:src/main/resources/db/migration"]
+}
