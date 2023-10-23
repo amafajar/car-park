@@ -14,9 +14,10 @@ More info - https://blog.octo.com/hexagonal-architecture-three-principles-and-an
 How to Start the Application
 -
 
-1. This project using java 21 and Spring Boot Version 3.1.5
-2. Currently using PostgreSQL as database. Init schema using *flyway* https://flywaydb.org/. DDL can be seen on resources/db/migration
-3. Use endpoint {**baseURL**}/car-park/v1/health-check to check if the app running correctly
+1. This project using **java 21** and **Spring Boot Version 3.1.5**
+2. This project using **Spring Webflux** framework https://docs.spring.io/spring-framework/reference/web/webflux.html
+3. Currently using PostgreSQL as database. Init schema using *flyway* https://flywaydb.org/. DDL can be seen on resources/db/migration
+4. Use endpoint {**baseURL**}/car-park/v1/health-check to check if the app running correctly
 
 External Parties
 -
@@ -26,7 +27,7 @@ External Parties
 Main feature
 -
 1. Convert CSV Data and insert on db - POST {**baseURL**}/car-park/v1/information
-2. Reverse Geo Code, convert SVY21 format coordinate to WGS84 format - GET {**baseURL**}/car-park/v1/information
+2. Reverse Geo Code, convert SVY21 format coordinate to WGS84 format - GET {**baseURL**}/car-park/v1/information/geocode
 3. Fetch Availability - GET {**baseURL**}/car-park/v1/availability
 4. Find the Nearest Available Car Park using coordinate - GET {**baseURL**}/car-park/v1/car-park/nearest?latitude=1.368768388&longitude=103.8502&page=1&per_page=10
 
@@ -47,3 +48,9 @@ Things to Improve
 - Enrich exception handling
 - Add more comprehensive unit test
 - Fine tune and optimize API response time
+- Add mechanism to keep availability updated
+
+Change Logs
+-
+
+- Change Car Park Information call using Map. Improve response time from 200-300ms to <100ms
